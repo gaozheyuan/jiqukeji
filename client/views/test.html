@@ -1,0 +1,150 @@
+<html>
+	<head>
+		<title>My first Three.js app</title>
+		<style>
+			body { margin: 0;}
+			div {float:left}
+			canvas { width: 100%; height: 100% }
+			video {width: 100%}
+		</style>
+	</head>
+	<body onload="initAll()">
+		<video controls="controls" autoplay="autoplay" loop="loop">
+  			<source src="/video/test1.mp4"/>
+			Your browser does not support the video tag.
+		</video>	
+		<div style="height:500px;width:50%;" id="divCanvasleft">
+        <canvas id="canvasleft" style="display: block; background-color: transparent; position: absolute; left: 0px; top: 0px; z-index: 99999;">
+		</canvas>
+		</div>
+		<div style="height:500px;width:50%;" id="divCanvasright">
+		<canvas id="canvasright" style="display: block; background-color: transparent; position: absolute; left: 50%; top: 0px; z-index: 99999;">
+		</canvas>
+		</div>
+
+		<button type="button" onClick="startRender()"> Start Animation!</button>
+		<button type="button" onClick="stopRender()"> Stop Animation!  </button>
+		<script src="js/three.min.js"></script>
+        <script src="js/jquery-2.1.4.js"></script>
+		<script>
+			var sceneleft,sceneright,cubeleft,cuberight,rendererleft,rendererright,cameraleft,cameraright,animationHandle;
+			var speed = 0.1;
+			var eyedistance = 6, screenDistance=50;
+			var movieTexture;
+			function initAll()
+			{
+				initThree();
+				initCamera();
+				initScene();
+				initObject();
+			}
+
+			function initThree()
+			{
+				rendererleft = new THREE.WebGLRenderer(
+							{
+								canvas:document.getElementById("canvasleft"),
+								antialias:true,
+								precision:"highp",
+								alpha:true,
+								premultipliedAlpha:false,
+								stencil:false,
+								preserveDrawingBuffer:true,
+								maxLights:1
+							});
+
+				rendererright = new THREE.WebGLRenderer(
+							{
+								canvas:document.getElementById("canvasright"),
+								antialias:true,
+								precision:"highp",
+								alpha:true,
+								premultipliedAlpha:false,
+								stencil:false,
+								preserveDrawingBuffer:true,
+								maxLights:1
+							});
+
+				var divLayer=$("#divCanvasleft");
+				rendererleft.setSize(divLayer.width(),divLayer.height());
+				rendererright.setSize(divLayer.width(),divLayer.height());
+			}
+			function initCamera()
+			{
+				var divLayer=$("#divCanvasleft");
+				cameraleft = new THREE.PerspectiveCamera( 75,divLayer.width()/divLayer.height(), 0.1, 1000 );
+				cameraright = new THREE.PerspectiveCamera( 75,divLayer.width()/divLayer.height(), 0.1, 1000 );
+				cameraleft.position.x = -eyedistance/2;
+          		cameraleft.position.y = screenDistance;
+          		cameraleft.position.z = 0;
+          		cameraleft.up.x = 0;
+          		cameraleft.up.y = 0;
+				cameraleft.up.z = -1;
+				cameraleft.lookAt({
+            		x : -eyedistance/2,
+            		y : 0,
+            		z : 0
+         		});
+
+				cameraright.position.x = eyedistance/2;
+        cameraright.position.y = screenDistance;
+				cameraright.position.z = 0;
+				cameraright.up.x = 0;
+				cameraright.up.y = 0;
+				cameraright.up.z = -1;
+				cameraright.lookAt({
+					x : eyedistance/2,
+					y : 0,
+					z : 0
+				});
+			}
+
+			function startRender()
+			{
+				animationHandle=self.setInterval(function()
+				{
+					cubeleft.rotation.x += speed;
+					cuberight.rotation.x += speed;
+					cubeleft.rotation.y += speed;
+					cuberight.rotation.y += speed;
+					cubeleft.rotation.z += speed;
+					cuberight.rotation.z += speed;
+					rendererleft.render(sceneleft, cameraleft);
+					rendererright.render(sceneright, cameraright);
+				},30);
+			}
+
+			function stopRender()
+			{
+				clearInterval(animationHandle);
+			}
+
+			function initScene() {//initialize the two scenes
+				sceneleft = new THREE.Scene();
+				sceneright = new THREE.Scene();
+			}
+
+			function initObject(){//initialize the objects
+
+				var effectGeometry = new THREE.CubeGeometry(5,5,5);
+
+				var effectMaterial = new THREE.MeshBasicMaterial({
+				//		map:movieTexture,
+				//		color: 0x00ff00
+						map : new THREE.ImageUtils.loadTexture("/images/texture.png")
+					});
+
+				//		movieTexture.needsUpdate = true;
+
+					cubeleft = new THREE.Mesh( effectGeometry, effectMaterial );
+					cuberight = new THREE.Mesh( effectGeometry, effectMaterial );
+
+					sceneleft.add(cubeleft);
+					sceneright.add(cuberight);
+
+					rendererleft.render(sceneleft, cameraleft);
+					rendererright.render(sceneright, cameraright);
+			}
+		</script>
+	</body>
+</html>
