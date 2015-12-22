@@ -1,24 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8"/>
-    <SocketStream/>
-    <title>Welcome</title>
-  </head>
-  <body>
-    <div id="content">
-      <a href="https://github.com/socketstream/socketstream">
-        <img src="/images/logo.png" alt="SocketStream Logo" width="160" height="160">
-      </a>
-      <h1>Welcome to your new realtime app!</h1>
+<style>
+body { margin: 0;}
+div {float:left;}
+canvas {width: 100%; height: 500px;}
+video {width: 100%;}
+</style>
+<head>
+  <meta charset="utf-8"/>
+  <SocketStream/>
+  <script src="js/three.min.js"></script>
+  <script src="js/jquery-2.1.4.js"></script>
+  <script src="js/js/utils/GeometryUtils.js"></script>
+  <script src="js/js/shaders/ConvolutionShader.js"></script>
+  <script src="js/js/shaders/CopyShader.js"></script>
+  <script src="js/js/shaders/FilmShader.js"></script>
+  <script src="js/js/shaders/FXAAShader.js"></script>
+  <script src="js/js/postprocessing/EffectComposer.js"></script>
+  <script src="js/js/postprocessing/RenderPass.js"></script>
+  <script src="js/js/postprocessing/ShaderPass.js"></script>
+  <script src="js/js/postprocessing/MaskPass.js"></script>
+  <script src="js/js/postprocessing/BloomPass.js"></script>
+  <script src="js/js/postprocessing/FilmPass.js"></script>
+  <script src="js/js/Detector.js"></script>
+  <script src="js/js/libs/stats.min.js"></script>
+  <script src="js/js/geometries/TextGeometry.js"></script>
+  <script src="js/js/utils/FontUtils.js"></script>
+  <script src="js/fonts/gentilis_bold.typeface.js"></script>
+  <script src="js/fonts/gentilis_regular.typeface.js"></script>
+  <script src="js/fonts/optimer_bold.typeface.js"></script>
+  <script src="js/fonts/optimer_regular.typeface.js"></script>
+  <script src="js/fonts/helvetiker_bold.typeface.js"></script>
+  <script src="js/fonts/helvetiker_regular.typeface.js"></script>
+  <script src="js/fonts/droid/droid_sans_regular.typeface.js"></script>
+  <script src="js/fonts/droid/droid_sans_bold.typeface.js"></script>
+  <script src="js/fonts/droid/droid_serif_regular.typeface.js"></script>
+  <script src="js/fonts/droid/droid_serif_bold.typeface.js"></script>
+  <script src="js/renderVideo.js"></script>
+  <title>Welcome</title>
+</head>
+<body onload="initAll()">
+  <video controls="controls" autoplay="autoplay" loop="loop" width="300px">
+    <source src="/video/test1.mp4"/>
+    Your browser does not support the video tag.
+  </video>
+  <div style="height:500px;width:100%;" id="divCanvas">
+    <canvas id="canvasAll" style="display: block; background-color: transparent; position: absolute; left: 0px; top: 0px; z-index: 99999;">
+    </canvas>
+  </div>
+  <button type="button" onClick="start3DRender()"> Start Animation!</button>
+  <button type="button" onClick="stopRender()"> Stop Animation!  </button>
+  <button type="button" onClick="change3Dto2D()"> Change 3D to 2D rendering </button>
+  <button type="button" onClick="change2Dto3D()"> Change 2D to 3D rendering </button>
+  <div id="content">
+    <a href="https://github.com/socketstream/socketstream">
+      <img src="/images/logo.png" alt="SocketStream Logo" width="160" height="160">
+    </a>
+    <h1>Welcome to your new realtime app!</h1>
 
-      <!-- QUICK CHAT DEMO-->
-      <form id="demo" onsubmit="return false">
-        <h3>Quick Chat Demo</h3>
-        <h5>Open this page in multiple tabs or browsers and type a message below</h5>
-        <div id="chatlog"></div>
-        <input id="myMessage" type="text" autocomplete="off">
-      </form>
-    </div>
-  </body>
+    <!-- QUICK CHAT DEMO-->
+    <form id="demo" onsubmit="return false">
+      <h3>Quick Chat Demo</h3>
+      <h5>Open this page in multiple tabs or browsers and type a message below</h5>
+      <div id="chatlog"></div>
+      <input id="myMessage" type="text" autocomplete="off">
+    </form>
+  </div>
+</body>
 </html>
+

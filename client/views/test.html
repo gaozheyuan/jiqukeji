@@ -1,46 +1,26 @@
+<!DOCTYPE html>
 <html>
 <head>
-	<title>My first Three.js app</title>
-	<style>
-	body { margin: 0;}
-	div {float:left;}
-	canvas {width: 100%; height: 500px;}
-	video {width: 100%;}
-	</style>
-</head>
-<body onload="initAll()">
-	<video controls="controls" autoplay="autoplay" loop="loop">
-		<source src="/video/test1.mp4"/>
-		Your browser does not support the video tag.
-	</video>
-	<div style="height:500px;width:100%;" id="divCanvas">
-		<canvas id="canvasAll" style="display: block; background-color: transparent; position: absolute; left: 0px; top: 0px; z-index: 99999;">
-		</canvas>
-	</div>
-	<button type="button" onClick="startRender()"> Start Animation!</button>
-	<button type="button" onClick="stopRender()"> Stop Animation!  </button>
+	<meta charset="utf-8"/>
+	<title>Video play</title>
+	<SocketStream/>
 	<script src="js/three.min.js"></script>
 	<script src="js/jquery-2.1.4.js"></script>
-	<script src="js/js/utils/GeometryUtils.js"></script>
 	<script src="js/js/utils/GeometryUtils.js"></script>
 	<script src="js/js/shaders/ConvolutionShader.js"></script>
 	<script src="js/js/shaders/CopyShader.js"></script>
 	<script src="js/js/shaders/FilmShader.js"></script>
 	<script src="js/js/shaders/FXAAShader.js"></script>
-
 	<script src="js/js/postprocessing/EffectComposer.js"></script>
 	<script src="js/js/postprocessing/RenderPass.js"></script>
 	<script src="js/js/postprocessing/ShaderPass.js"></script>
 	<script src="js/js/postprocessing/MaskPass.js"></script>
 	<script src="js/js/postprocessing/BloomPass.js"></script>
 	<script src="js/js/postprocessing/FilmPass.js"></script>
-
 	<script src="js/js/Detector.js"></script>
 	<script src="js/js/libs/stats.min.js"></script>
-
 	<script src="js/js/geometries/TextGeometry.js"></script>
 	<script src="js/js/utils/FontUtils.js"></script>
-
 	<script src="js/fonts/gentilis_bold.typeface.js"></script>
 	<script src="js/fonts/gentilis_regular.typeface.js"></script>
 	<script src="js/fonts/optimer_bold.typeface.js"></script>
@@ -51,128 +31,26 @@
 	<script src="js/fonts/droid/droid_sans_bold.typeface.js"></script>
 	<script src="js/fonts/droid/droid_serif_regular.typeface.js"></script>
 	<script src="js/fonts/droid/droid_serif_bold.typeface.js"></script>
-	<script>
-	var scene,cube,captionScreen,cameraleft,cameraright,animationHandle,allrenderer;
-	var speed = 0.1;
-	var eyedistance = 6, screenDistance=50;
-	var movieTexture;
-	function initAll()
-	{
-		initThree();
-		initCamera();
-		initScene();
-		initObject();
-	}
-
-	function initThree()
-	{
-
-		allrenderer = new THREE.WebGLRenderer(
-			{
-				canvas:document.getElementById("canvasAll"),
-				antialias:true,
-				precision:"highp",
-				alpha:true,
-				premultipliedAlpha:false,
-				stencil:false,
-				preserveDrawingBuffer:true,
-				maxLights:1
-			}
-		);
-		var divLayer=$("#divCanvas");
-		allrenderer.setSize(divLayer.width(),divLayer.height());
-	}
-
-	function initCamera()
-	{
-		var divLayer=$("#divCanvas");
-		cameraleft = new THREE.PerspectiveCamera(75,divLayer.width()/divLayer.height()/2, 0.1, 1000 );
-		cameraright = new THREE.PerspectiveCamera(75,divLayer.width()/divLayer.height()/2, 0.1, 1000 );
-		cameraleft.position.set(-eyedistance/2,screenDistance,0);
-		cameraleft.up.set(0,0,-1);
-		cameraleft.lookAt({
-			x : -eyedistance/2,
-			y : 0,
-			z : 0
-		});
-		cameraright.position.set(eyedistance/2,screenDistance,0);
-		cameraright.up.set(0,0,-1);
-		cameraright.lookAt({
-			x : eyedistance/2,
-			y : 0,
-			z : 0
-		});
-	}
-	function initScene() {//initialize the two scenes
-		scene = new THREE.Scene();
-	}
-
-	function initObject(){//initialize the objects
-		var effectGeometry = new THREE.CubeGeometry(15,15,15);
-
-		var effectMaterial = new THREE.MeshBasicMaterial({
-			map : new THREE.ImageUtils.loadTexture("/images/texture.png")
-		});
-		cube = new THREE.Mesh( effectGeometry, effectMaterial );
-		cube.position.set(0,-50,0);
-		scene.add(cube);
-
-		var textGeometry = new THREE.TextGeometry("Hello",
-		{
-			size: 10,
-			height: 10,
-			curveSegments: 4,
-			font: "optimer",
-			weight: "bold",
-			style: "normal",
-			bevelThickness: 1,
-			bevelSize: 1,
-			bevelEnabled: true,
-			material: 0,
-			extrudeMaterial: 1
-		});
-		textGeometry.computeBoundingBox();
-		textGeometry.computeVertexNormals();
-
-		//		var captionGeometry = new THREE.PlaneGeometry( 240, 100, 4, 4 );
-		var movieMaterial = new THREE.MeshBasicMaterial({
-			map : new THREE.ImageUtils.loadTexture("/images/texture.png")
-		});
-		captionScreen = new THREE.Mesh(textGeometry, effectMaterial );
-		captionScreen.position.set(100,-50,0);
-		captionScreen.rotation.x=Math.PI*3/2;
-		scene.add(captionScreen);
-
-		//		textGeometry.computeBindingBox();
-		//		textGeometry.textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
-	}
-
-	function startRender()
-	{
-		animationHandle=self.setInterval(
-			function()
-			{
-				var divLayer=$("#divCanvas");
-				allrenderer.enableScissorTest(true);
-				allrenderer.clear();
-				cube.rotation.x += speed;
-				cube.rotation.y += speed;
-				cube.rotation.z += speed;
-				captionScreen.position.x-=speed;
-				allrenderer.setViewport(0,0,divLayer.width()/2,divLayer.height());
-				allrenderer.setScissor(0,0,divLayer.width()/2,divLayer.height());
-				allrenderer.render(scene,cameraleft);
-				allrenderer.setViewport(divLayer.width()/2,0,divLayer.width()/2,divLayer.height());
-				allrenderer.setScissor(divLayer.width()/2,0,divLayer.width()/2,divLayer.height());
-				allrenderer.render(scene,cameraright);
-				allrenderer.enableScissorTest( false );
-			},30);
-		}
-
-		function stopRender()
-		{
-			clearInterval(animationHandle);
-		}
-		</script>
-	</body>
-	</html>
+	<script src="js/renderVideo.js"></script>
+	<style>
+	body { margin: 0;}
+	div {float:left;}
+	canvas {width: 100%; height: 500px;}
+	video {width: 100%;}
+	</style>
+</head>
+<body onload="initAll()">
+	<video controls="controls" autoplay="autoplay" loop="loop" width="300px">
+		<source src="/video/test1.mp4"/>
+		Your browser does not support the video tag.
+	</video>
+	<div style="height:500px;width:100%;" id="divCanvas">
+		<canvas id="canvasAll" style="display: block; background-color: transparent; position: absolute; left: 0px; top: 0px; z-index: 99999;">
+		</canvas>
+	</div>
+	<button type="button" onClick="start3DRender()"> Start Animation!</button>
+	<button type="button" onClick="stopRender()"> Stop Animation!  </button>
+	<button type="button" onClick="change3Dto2D()"> Change 3D to 2D rendering </button>
+	<button type="button" onClick="change2Dto3D()"> Change 2D to 3D rendering </button>
+</body>
+</html>
